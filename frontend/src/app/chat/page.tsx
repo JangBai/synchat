@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ChatHeader from "@/components/chat/ChatHeader";
 import MessageList from "@/components/chat/MessageList";
 import MessageInput from "@/components/chat/MessageInput";
 
@@ -19,6 +20,7 @@ export default function RoomPage() {
 
   return (
     <div className="flex h-full flex-col">
+      <ChatHeader />
       <MessageList messages={messages} />
       <MessageInput input={input} setInput={setInput} onSend={handleSend} />
     </div>

@@ -11,7 +11,7 @@ const rooms = [
 export default function RoomList() {
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b px-4 py-4 font-semibold">채팅방</div>
+      <div className="border-b px-3 py-3 font-semibold">채팅방</div>
 
       <div className="flex-1 overflow-y-auto">
         {rooms.map((room) => (
