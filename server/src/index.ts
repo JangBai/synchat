@@ -19,8 +19,12 @@ const io = new Server(server, {
   },
 });
 
+const rooms: { id: string; name: string }[] = [];
+
 io.on("connection", (socket) => {
   console.log("🔌 connected:", socket.id);
+
+  socket.emit("room-list", rooms);
 
   socket.on("create-room", (roomName) => {
     console.log("🔥 create-room 받음:", roomName);
@@ -31,6 +35,8 @@ io.on("connection", (socket) => {
       id: roomId,
       name: roomName,
     };
+
+    rooms.push(room);
 
     console.log("📢 room-created emit:", room);
 

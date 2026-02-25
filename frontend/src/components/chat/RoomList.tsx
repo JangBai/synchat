@@ -4,20 +4,23 @@ import Link from "next/link";
 import { getSocket } from "@/lib/socket";
 import { useEffect, useState } from "react";
 
+const socket = getSocket();
+
 export default function RoomList() {
   const [rooms, setRooms] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    const socket = getSocket();
+    socket.on("room-list", (serverRooms) => {
+      setRooms(serverRooms);
+    });
 
-    const handleRoomCreated = (room: { id: string; name: string }) => {
+    socket.on("room-created", (room) => {
       setRooms((prev) => [...prev, room]);
-    };
-
-    socket.on("room-created", handleRoomCreated);
+    });
 
     return () => {
-      socket.off("room-created", handleRoomCreated);
+      socket.off("room-list");
+      socket.off("room-created");
     };
   }, []);
 
@@ -25,11 +28,8 @@ export default function RoomList() {
     const roomName = prompt("채팅방 이름을 입력해주세요.");
     if (!roomName) return;
 
-    const socket = getSocket();
     socket.emit("create-room", roomName);
   };
-
-  console.log("rooms:", rooms);
 
   return (
     <div className="flex h-full flex-col">

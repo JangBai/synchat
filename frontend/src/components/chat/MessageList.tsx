@@ -9,7 +9,7 @@ export default function MessageList({ messages }: Props) {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className="w-fit max-w-[70%] rounded-xl bg-blue-500 px-4 py-2 text-sm text-white"
+            className="w-fit max-w-[70%] rounded-md bg-blue-500 px-4 py-2 text-sm whitespace-pre-wrap text-white"
           >
             {msg}
           </div>
