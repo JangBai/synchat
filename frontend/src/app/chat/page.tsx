@@ -1,28 +1,7 @@
-"use client";
-
-import { useState } from "react";
-import ChatHeader from "@/components/chat/ChatHeader";
-import MessageList from "@/components/chat/MessageList";
-import MessageInput from "@/components/chat/MessageInput";
-
-export default function RoomPage() {
-  const [messages, setMessages] = useState<string[]>([
-    "안녕하세요 👋",
-    "Synchat 테스트 메시지입니다.",
-  ]);
-  const [input, setInput] = useState("");
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, input]);
-    setInput("");
-  };
-
+export default function ChatHome() {
   return (
-    <div className="flex h-full flex-col">
-      <ChatHeader />
-      <MessageList messages={messages} />
-      <MessageInput input={input} setInput={setInput} onSend={handleSend} />
+    <div className="flex h-full items-center justify-center">
+      <div className="text-lg text-gray-500">채팅방을 선택해주세요.</div>
     </div>
   );
 }

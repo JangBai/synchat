@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const PORT = process.env.PORT || 4000;
-
+console.log("PORT:", PORT);
 const app = express();
 app.use(cors());
 
@@ -20,17 +20,29 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("connected:", socket.id);
+  console.log("🔌 connected:", socket.id);
 
-  socket.on("message", (data) => {
-    console.log("received:", data);
+  socket.on("create-room", (roomName) => {
+    console.log("🔥 create-room 받음:", roomName);
 
-    // 전체 브로드캐스트
-    io.emit("message", data);
+    const roomId = Date.now().toString();
+
+    const room = {
+      id: roomId,
+      name: roomName,
+    };
+
+    console.log("📢 room-created emit:", room);
+
+    io.emit("room-created", room);
   });
 
-  socket.on("disconnect", () => {
-    console.log("disconnected:", socket.id);
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
+  });
+
+  socket.on("send-message", ({ roomId, message }) => {
+    io.to(roomId).emit("receive-message", message);
   });
 });
 
