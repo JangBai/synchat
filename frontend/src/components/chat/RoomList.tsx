@@ -1,34 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { getSocket } from "@/lib/socket";
-import { useEffect, useState } from "react";
-
-const socket = getSocket();
+import { useRooms } from "@/hooks/useRooms";
 
 export default function RoomList() {
-  const [rooms, setRooms] = useState<{ id: string; name: string }[]>([]);
-
-  useEffect(() => {
-    socket.on("room-list", (serverRooms) => {
-      setRooms(serverRooms);
-    });
-
-    socket.on("room-created", (room) => {
-      setRooms((prev) => [...prev, room]);
-    });
-
-    return () => {
-      socket.off("room-list");
-      socket.off("room-created");
-    };
-  }, []);
+  const { rooms, createRoom } = useRooms();
 
   const handleCreateRoom = () => {
     const roomName = prompt("채팅방 이름을 입력해주세요.");
     if (!roomName) return;
 
-    socket.emit("create-room", roomName);
+    createRoom(roomName);
   };
 
   return (
