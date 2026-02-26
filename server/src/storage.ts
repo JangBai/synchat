@@ -6,6 +6,8 @@ const filePath = path.resolve(process.cwd(), "data/chat.json");
 export type User = {
   id: string;
   name: string;
+  emoji: string;
+  backgroundColor: string;
 };
 
 export type Room = {

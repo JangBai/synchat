@@ -1,27 +1,11 @@
 import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
+import { User, Message } from "@/types";
 
-type User = {
-  id: string;
-  name: string;
-};
-
-export type ChatMessage = {
-  id: string;
-  text: string;
-  sender: User;
-  createdAt: number;
-};
+export type ChatMessage = Message;
 
 export function useChatRoom(socket: Socket | null, roomId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-  // useEffect(() => {
-  //   if (!roomId) return;
-
-  //   socket?.emit("join-room", roomId);
-  //   setMessages([]);
-  // }, [roomId]);
 
   useEffect(() => {
     if (!roomId || !socket) return;
@@ -61,8 +45,18 @@ export function useChatRoom(socket: Socket | null, roomId: string) {
     }
 
     return () => {
-      socket.off("previous-messages", handlePrevious);
-      socket.off("receive-message", handleReceive);
+      console.log("🚪 CLIENT leaving room:", roomId);
+      console.log("🔌 socket state:", socket?.id, socket?.connected);
+
+      if (socket) {
+        console.log("📤 CLIENT emitting leave-room to server");
+        socket.emit("leave-room", roomId);
+      } else {
+        console.warn("⚠️ socket is null");
+      }
+
+      socket?.off("previous-messages", handlePrevious);
+      socket?.off("receive-message", handleReceive);
     };
   }, [roomId, socket]);
 

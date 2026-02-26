@@ -17,7 +17,7 @@ export default function Modal({
   onConfirm,
   children,
   confirmText = "확인",
-  cancelText = "닫기",
+  cancelText = "취소",
 }: ModalProps) {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -26,30 +26,29 @@ export default function Modal({
 
     if (isOpen) {
       document.addEventListener("keydown", handleEsc);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      {/* 모달 박스 */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        className="w-full max-w-md scale-100 animate-in fade-in zoom-in-95 rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 내용 영역 */}
         <div className="mb-6">{children}</div>
 
-        {/* 버튼 영역 */}
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-lg border px-4 py-2 text-sm transition duration-300 hover:bg-gray-100"
+            className="cursor-pointer rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             {cancelText}
           </button>
@@ -57,7 +56,7 @@ export default function Modal({
           {onConfirm && (
             <button
               onClick={onConfirm}
-              className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm text-white transition duration-300 hover:bg-blue-700"
+              className="cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white shadow-lg transition hover:bg-primary-dark"
             >
               {confirmText}
             </button>
@@ -65,7 +64,6 @@ export default function Modal({
         </div>
       </div>
 
-      {/* 배경 클릭 시 닫기 */}
       <div className="absolute inset-0 -z-10" onClick={onClose} />
     </div>
   );

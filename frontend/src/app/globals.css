@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --font-family-sans: var(--font-pretendard);
+
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
+  --color-primary-light: #a5b4fc;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {
   scroll-behavior: smooth;
 }
@@ -8,10 +18,4 @@ body {
   font-family: var(--font-pretendard);
   line-height: 1.6;
   letter-spacing: -0.01em;
-}
-
-:root {
-  --color-main: #6366f1;
-  --color-main-strong: #4f46e5;
-  --color-main-soft: #a5b4fc;
 }

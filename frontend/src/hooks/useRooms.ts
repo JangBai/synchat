@@ -1,25 +1,19 @@
 import { useEffect, useState } from "react";
-import { getSocket } from "@/lib/socket";
-
-type User = {
-  id: string;
-  name: string;
-};
-
-type Room = {
-  id: string;
-  name: string;
-  createdBy: User;
-  createdAt: number;
-};
+import { Room } from "@/types";
+import { useSocket } from "@/contexts/SocketContext";
 
 export function useRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const socket = useSocket();
 
   useEffect(() => {
-    // 클라이언트에서만 socket 생성
-    const socket = getSocket();
+    if (!socket) {
+      console.log("⚠️ useRooms: socket is null");
+      return;
+    }
+
+    console.log("🎧 useRooms using socket:", socket.id);
 
     const handleRoomList = (serverRooms: Room[]) => {
       console.log("📋 received room-list:", serverRooms);
@@ -58,11 +52,12 @@ export function useRooms() {
       socket.off("room-list", handleRoomList);
       socket.off("room-created", handleRoomCreated);
     };
-  }, []);
+  }, [socket]);
 
   const createRoom = (roomName: string) => {
-    const socket = getSocket();
-    socket.emit("create-room", roomName);
+    if (socket) {
+      socket.emit("create-room", roomName);
+    }
   };
 
   return {

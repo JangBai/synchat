@@ -1,26 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import MessageList from "@/components/chat/MessageList";
 import MessageInput from "@/components/chat/MessageInput";
+import TypingIndicator from "@/components/chat/TypingIndicator";
+import RoomHeader from "@/components/chat/RoomHeader";
 import { useParams } from "next/navigation";
 import { useChatRoom } from "@/hooks/useChatRoom";
-import { getSocket } from "@/lib/socket";
+import { useTypingIndicator } from "@/hooks/useTypingIndicator";
+import { useRooms } from "@/hooks/useRooms";
+import { useSocket } from "@/contexts/SocketContext";
 
 export default function RoomPage() {
   const { roomId } = useParams();
   const [input, setInput] = useState("");
-  const [socket, setSocket] = useState<ReturnType<typeof getSocket> | null>(
-    null
-  );
+  const socket = useSocket();
 
-  useEffect(() => {
-    // 클라이언트에서만 socket 생성
-    const socketInstance = getSocket();
-    setSocket(socketInstance);
-  }, []);
+  const { rooms } = useRooms();
+  const currentRoom = rooms.find((room) => room.id === roomId);
 
   const { messages, sendMessage } = useChatRoom(socket, roomId as string);
+
+  // 타이핑 인디케이터
+  useTypingIndicator(socket, roomId as string, input);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -31,7 +33,13 @@ export default function RoomPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <MessageList messages={messages} />
+      <RoomHeader
+        socket={socket}
+        roomId={roomId as string}
+        roomName={currentRoom?.name || "채팅방"}
+      />
+      <MessageList messages={messages} socket={socket} />
+      <TypingIndicator socket={socket} />
       <MessageInput input={input} setInput={setInput} onSend={handleSend} />
     </div>
   );
