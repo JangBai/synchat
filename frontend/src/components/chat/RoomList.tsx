@@ -2,15 +2,21 @@
 
 import Link from "next/link";
 import { useRooms } from "@/hooks/useRooms";
+import { useState } from "react";
+import Modal from "@/components/modal/Modal";
 
 export default function RoomList() {
   const { rooms, createRoom } = useRooms();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roomName, setRoomName] = useState("");
 
   const handleCreateRoom = () => {
-    const roomName = prompt("채팅방 이름을 입력해주세요.");
-    if (!roomName) return;
+    if (!roomName.trim()) return;
 
     createRoom(roomName);
+    console.log("생성된 방 이름:", roomName);
+    setIsModalOpen(false);
+    setRoomName("");
   };
 
   return (
@@ -18,7 +24,7 @@ export default function RoomList() {
       <div className="flex items-center justify-between border-b px-3 py-3">
         <div className="font-semibold">채팅방</div>
         <button
-          onClick={handleCreateRoom}
+          onClick={() => setIsModalOpen(true)}
           className="cursor-pointer rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-500 transition duration-300 hover:bg-gray-100"
         >
           만들기
@@ -36,6 +42,23 @@ export default function RoomList() {
           </Link>
         ))}
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleCreateRoom}
+      >
+        <div className="flex flex-col gap-3">
+          <span className="text-lg font-semibold">채팅방 생성</span>
+          <input
+            type="text"
+            placeholder="채팅방 이름을 입력해주세요"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            className="rounded-lg border px-3 py-2"
+          />
+        </div>
+      </Modal>
     </div>
   );
 }
