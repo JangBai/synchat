@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 
-const filePath = path.resolve(process.cwd(), "data/chat.json");
+const dataDir = path.resolve(process.cwd(), "data");
+const filePath = path.join(dataDir, "chat.json");
 
 export type User = {
   id: string;
@@ -29,9 +30,17 @@ export type ChatData = {
   messages: Record<string, Message[]>;
 };
 
-export function loadChatData(): ChatData {
+export function loadChatData() {
+  // 폴더 없으면 생성
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  // 파일 없으면 기본 구조로 생성
   if (!fs.existsSync(filePath)) {
-    return { rooms: [], messages: {} };
+    const initialData = { rooms: [], messages: {} };
+    fs.writeFileSync(filePath, JSON.stringify(initialData, null, 2));
+    return initialData;
   }
 
   const raw = fs.readFileSync(filePath, "utf-8");
@@ -44,11 +53,16 @@ export function loadChatData(): ChatData {
     return JSON.parse(raw);
   } catch (err) {
     console.error("JSON parse error. Resetting file.");
-    return { rooms: [], messages: {} };
+    const resetData = { rooms: [], messages: {} };
+    fs.writeFileSync(filePath, JSON.stringify(resetData, null, 2));
+    return resetData;
   }
 }
 
-export function saveChatData(data: ChatData) {
-  console.log("💾 Saving to file...");
+export function saveChatData(data: any) {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
