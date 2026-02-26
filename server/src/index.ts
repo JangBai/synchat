@@ -41,7 +41,8 @@ io.on("connection", (socket) => {
 
     saveChatData({ rooms, messages });
 
-    // 🔥 room-created 제거
+    // 새로운 방 생성 알림 + 전체 목록 재전송
+    io.emit("room-created", room);
     io.emit("room-list", rooms);
   });
 
