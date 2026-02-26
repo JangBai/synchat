@@ -13,17 +13,19 @@ export default function RoomList() {
   const handleCreateRoom = () => {
     if (!roomName.trim()) return;
 
-    if (!isLoaded) {
-      return <div>Loading...</div>;
-    }
-
     createRoom(roomName);
     console.log("생성된 방 이름:", roomName);
     setIsModalOpen(false);
     setRoomName("");
   };
 
-  console.log("rooms:", rooms);
+  if (!isLoaded) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full flex-col">

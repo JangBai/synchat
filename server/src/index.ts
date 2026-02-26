@@ -27,8 +27,11 @@ io.on("connection", (socket) => {
   // -------------------------연결--------------------------------
   console.log("🔌 connected:", socket.id);
 
-  // -------------------------방 목록 전송--------------------------------
-  socket.emit("room-list", rooms);
+  // -------------------------방 목록 요청--------------------------------
+  socket.on("get-rooms", () => {
+    console.log("📋 sending room-list to:", socket.id);
+    socket.emit("room-list", rooms);
+  });
 
   // -------------------------방 생성--------------------------------
   socket.on("create-room", (roomName) => {
