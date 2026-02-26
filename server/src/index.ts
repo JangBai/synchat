@@ -50,8 +50,6 @@ io.on("connection", (socket) => {
 
     saveChatData({ rooms, messages });
 
-    console.log("✅ room created by:", user.name);
-
     // 새로운 방 생성 알림 + 전체 목록 재전송
     io.emit("room-created", room);
     io.emit("room-list", rooms);
@@ -81,8 +79,6 @@ io.on("connection", (socket) => {
     messages[roomId].push(newMessage);
 
     saveChatData({ rooms, messages });
-
-    console.log("📨 message from:", user.name, "in room:", roomId);
 
     io.to(roomId).emit("receive-message", newMessage);
   });

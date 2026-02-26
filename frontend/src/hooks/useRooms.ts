@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket";
 
-const socket = getSocket();
-
 type User = {
   id: string;
   name: string;
@@ -17,10 +15,10 @@ type Room = {
 
 export function useRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
-
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    // 클라이언트에서만 socket 생성
     const socket = getSocket();
 
     const handleRoomList = (serverRooms: Room[]) => {
@@ -63,6 +61,7 @@ export function useRooms() {
   }, []);
 
   const createRoom = (roomName: string) => {
+    const socket = getSocket();
     socket.emit("create-room", roomName);
   };
 

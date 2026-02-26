@@ -22,15 +22,15 @@ export default function MessageInput({ input, setInput, onSend }: Props) {
 
   return (
     <footer className="border-t bg-white px-6 py-4">
-      {/* 드래그 핸들 */}
-      <div
+      {/* 드래그 핸들 임시 제거 */}
+      {/* <div
         {...dragHandleProps}
         className="mx-auto mb-2 h-1 w-16 cursor-row-resize rounded bg-gray-300"
-      />
+      /> */}
 
       <div
-        style={{ height }}
-        className="mx-auto flex max-w-3xl flex-col items-end gap-3 rounded-xl border px-4 py-3"
+        // style={{ height }}
+        className="mx-auto flex h-[200px] max-w-3xl flex-col items-end gap-3 rounded-xl border px-4 py-3"
       >
         <textarea
           value={input}

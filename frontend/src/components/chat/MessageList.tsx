@@ -1,7 +1,7 @@
 "use client";
 
 import { ChatMessage } from "@/hooks/useChatRoom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 type Props = {
   messages: ChatMessage[];
@@ -12,6 +12,7 @@ export default function MessageList({ messages }: Props) {
     id: string;
     name: string;
   } | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const user = localStorage.getItem("chat-user");
@@ -20,8 +21,18 @@ export default function MessageList({ messages }: Props) {
     }
   }, []);
 
+  // 새 메시지가 올 때마다 스크롤을 아래로
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <main className="flex-1 overflow-y-auto px-6 py-4">
+    <main
+      ref={scrollRef}
+      className="max-h-[calc(100vh-300px)] flex-1 overflow-y-auto px-6 py-4"
+    >
       <div className="mx-auto flex max-w-3xl flex-col gap-1">
         {messages.map((msg) => {
           const isMe = currentUser?.id === msg.sender.id;

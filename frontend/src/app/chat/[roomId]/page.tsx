@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MessageList from "@/components/chat/MessageList";
 import MessageInput from "@/components/chat/MessageInput";
 import { useParams } from "next/navigation";
 import { useChatRoom } from "@/hooks/useChatRoom";
+import { getSocket } from "@/lib/socket";
 
 export default function RoomPage() {
   const { roomId } = useParams();
   const [input, setInput] = useState("");
-  const { messages, sendMessage } = useChatRoom(roomId as string);
+  const [socket, setSocket] = useState<ReturnType<typeof getSocket> | null>(
+    null
+  );
+
+  useEffect(() => {
+    // 클라이언트에서만 socket 생성
+    const socketInstance = getSocket();
+    setSocket(socketInstance);
+  }, []);
+
+  const { messages, sendMessage } = useChatRoom(socket, roomId as string);
 
   const handleSend = () => {
     if (!input.trim()) return;
