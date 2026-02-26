@@ -3,9 +3,16 @@ import { getSocket } from "@/lib/socket";
 
 const socket = getSocket();
 
+type User = {
+  id: string;
+  name: string;
+};
+
 type Room = {
   id: string;
   name: string;
+  createdBy: User;
+  createdAt: number;
 };
 
 export function useRooms() {

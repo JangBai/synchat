@@ -3,9 +3,28 @@ import path from "path";
 
 const filePath = path.resolve(process.cwd(), "data/chat.json");
 
+export type User = {
+  id: string;
+  name: string;
+};
+
+export type Room = {
+  id: string;
+  name: string;
+  createdBy: User;
+  createdAt: number;
+};
+
+export type Message = {
+  id: string;
+  text: string;
+  sender: User;
+  createdAt: number;
+};
+
 export type ChatData = {
-  rooms: { id: string; name: string }[];
-  messages: Record<string, { id: string; text: string; createdAt: number }[]>;
+  rooms: Room[];
+  messages: Record<string, Message[]>;
 };
 
 export function loadChatData(): ChatData {

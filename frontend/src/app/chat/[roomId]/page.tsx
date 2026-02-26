@@ -14,7 +14,7 @@ export default function RoomPage() {
   const handleSend = () => {
     if (!input.trim()) return;
 
-    sendMessage(input, "me");
+    sendMessage(input);
     setInput("");
   };
 

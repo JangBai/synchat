@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import RoomList from "@/components/chat/RoomList";
 import ChatHeader from "@/components/chat/ChatHeader";
 
@@ -8,6 +10,16 @@ export default function ChatLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("chat-user");
+
+    if (!savedUser) {
+      router.replace("/");
+    }
+  }, [router]);
+
   return (
     <div className="flex h-screen flex-col">
       <ChatHeader />

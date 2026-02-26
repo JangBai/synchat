@@ -25,7 +25,8 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   // -------------------------연결--------------------------------
-  console.log("🔌 connected:", socket.id);
+  const { user } = socket.handshake.auth;
+  console.log("🔌 connected:", socket.id, user);
 
   // -------------------------방 목록 요청--------------------------------
   socket.on("get-rooms", () => {
@@ -37,12 +38,19 @@ io.on("connection", (socket) => {
   socket.on("create-room", (roomName) => {
     const roomId = uuidv4();
 
-    const room = { id: roomId, name: roomName };
+    const room = {
+      id: roomId,
+      name: roomName,
+      createdBy: user,
+      createdAt: Date.now(),
+    };
 
     rooms.push(room);
     messages[roomId] = [];
 
     saveChatData({ rooms, messages });
+
+    console.log("✅ room created by:", user.name);
 
     // 새로운 방 생성 알림 + 전체 목록 재전송
     io.emit("room-created", room);
@@ -58,11 +66,11 @@ io.on("connection", (socket) => {
   });
 
   // -------------------------메세지 전송--------------------------------
-  socket.on("send-message", ({ roomId, message, sender }) => {
+  socket.on("send-message", ({ roomId, message }) => {
     const newMessage = {
       id: uuidv4(),
       text: message,
-      sender,
+      sender: user,
       createdAt: Date.now(),
     };
 
@@ -73,6 +81,8 @@ io.on("connection", (socket) => {
     messages[roomId].push(newMessage);
 
     saveChatData({ rooms, messages });
+
+    console.log("📨 message from:", user.name, "in room:", roomId);
 
     io.to(roomId).emit("receive-message", newMessage);
   });

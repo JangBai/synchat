@@ -3,11 +3,16 @@ import { getSocket } from "@/lib/socket";
 
 const socket = getSocket();
 
+type User = {
+  id: string;
+  name: string;
+};
+
 export type ChatMessage = {
   id: string;
   text: string;
+  sender: User;
   createdAt: number;
-  sender?: string; // 나중에 추가할 거
 };
 
 export function useChatRoom(roomId: string) {
@@ -38,11 +43,10 @@ export function useChatRoom(roomId: string) {
     };
   }, []);
 
-  const sendMessage = (message: string, sender: string) => {
+  const sendMessage = (message: string) => {
     socket.emit("send-message", {
       roomId,
       message,
-      sender: "me",
     });
   };
 
