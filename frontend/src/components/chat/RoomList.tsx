@@ -6,18 +6,24 @@ import { useState } from "react";
 import Modal from "@/components/modal/Modal";
 
 export default function RoomList() {
-  const { rooms, createRoom } = useRooms();
+  const { rooms, createRoom, isLoaded } = useRooms();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roomName, setRoomName] = useState("");
 
   const handleCreateRoom = () => {
     if (!roomName.trim()) return;
 
+    if (!isLoaded) {
+      return <div>Loading...</div>;
+    }
+
     createRoom(roomName);
     console.log("생성된 방 이름:", roomName);
     setIsModalOpen(false);
     setRoomName("");
   };
+
+  console.log("rooms:", rooms);
 
   return (
     <div className="flex h-full flex-col">

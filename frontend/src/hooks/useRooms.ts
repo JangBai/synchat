@@ -11,21 +11,20 @@ type Room = {
 export function useRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
   useEffect(() => {
+    const socket = getSocket();
+
     const handleRoomList = (serverRooms: Room[]) => {
       setRooms(serverRooms);
-    };
-
-    const handleRoomCreated = (room: Room) => {
-      setRooms((prev) => [...prev, room]);
+      setIsLoaded(true);
     };
 
     socket.on("room-list", handleRoomList);
-    socket.on("room-created", handleRoomCreated);
 
     return () => {
       socket.off("room-list", handleRoomList);
-      socket.off("room-created", handleRoomCreated);
     };
   }, []);
 
@@ -36,5 +35,6 @@ export function useRooms() {
   return {
     rooms,
     createRoom,
+    isLoaded,
   };
 }

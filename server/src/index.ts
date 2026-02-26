@@ -3,6 +3,10 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
+import { loadChatData, saveChatData } from "./storage";
+
+let { rooms, messages } = loadChatData();
 
 dotenv.config();
 
@@ -19,36 +23,54 @@ const io = new Server(server, {
   },
 });
 
-const rooms: { id: string; name: string }[] = [];
-
 io.on("connection", (socket) => {
+  // -------------------------연결--------------------------------
   console.log("🔌 connected:", socket.id);
 
+  // -------------------------방 목록 전송--------------------------------
   socket.emit("room-list", rooms);
 
+  // -------------------------방 생성--------------------------------
   socket.on("create-room", (roomName) => {
-    console.log("🔥 create-room 받음:", roomName);
+    const roomId = uuidv4();
 
-    const roomId = Date.now().toString();
-
-    const room = {
-      id: roomId,
-      name: roomName,
-    };
+    const room = { id: roomId, name: roomName };
 
     rooms.push(room);
+    messages[roomId] = [];
 
-    console.log("📢 room-created emit:", room);
+    saveChatData({ rooms, messages });
 
-    io.emit("room-created", room);
+    // 🔥 room-created 제거
+    io.emit("room-list", rooms);
   });
 
+  // -------------------------방 입장--------------------------------
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
+
+    // 기존 메시지 전송
+    socket.emit("previous-messages", messages[roomId] || []);
   });
 
-  socket.on("send-message", ({ roomId, message }) => {
-    io.to(roomId).emit("receive-message", message);
+  // -------------------------메세지 전송--------------------------------
+  socket.on("send-message", ({ roomId, message, sender }) => {
+    const newMessage = {
+      id: uuidv4(),
+      text: message,
+      sender,
+      createdAt: Date.now(),
+    };
+
+    if (!messages[roomId]) {
+      messages[roomId] = [];
+    }
+
+    messages[roomId].push(newMessage);
+
+    saveChatData({ rooms, messages });
+
+    io.to(roomId).emit("receive-message", newMessage);
   });
 });
 
