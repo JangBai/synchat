@@ -44,11 +44,33 @@ export default function Home() {
     return true;
   };
 
-  const handleStart = () => {
+  const handleStart = async () => {
     const isValid = validate();
     if (!isValid) return;
 
     console.log("검증 통과 ✅");
+
+    const res = await fetch("http://localhost:5000/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        nickname,
+        profile: selectedEmoji,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
+      return;
+    }
+
+    console.log("회원가입 성공:", data);
     // 여기서 나중에 API 호출
   };
 
