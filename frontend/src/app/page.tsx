@@ -50,18 +50,21 @@ export default function Home() {
 
     console.log("검증 통과 ✅");
 
-    const res = await fetch("http://localhost:5000/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        nickname,
-        profile: selectedEmoji,
-      }),
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          nickname,
+          profile: selectedEmoji,
+        }),
+      }
+    );
 
     const data = await res.json();
 
@@ -70,8 +73,9 @@ export default function Home() {
       return;
     }
 
-    console.log("회원가입 성공:", data);
-    // 여기서 나중에 API 호출
+    if (res.ok) {
+      router.push("/login");
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -216,7 +220,7 @@ export default function Home() {
           onClick={handleStart}
           className="bg-primary hover:bg-primary-dark w-full cursor-pointer rounded-xl px-4 py-3.5 text-lg font-bold text-white shadow-xl transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
         >
-          시작하기
+          아이디 생성하기
         </button>
       </div>
     </main>

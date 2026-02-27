@@ -8,7 +8,7 @@ export function createApp() {
 
   app.use(cors());
   app.use(express.json());
-  app.use("/auth", authRoutes);
+  app.use("/v1/auth", authRoutes);
 
   const server = http.createServer(app);
 

@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 const router = Router();
+dotenv.config();
 
 router.post("/register", async (req, res) => {
   try {
@@ -35,6 +38,52 @@ router.post("/register", async (req, res) => {
       email: user.email,
       nickname: user.nickname,
       profile: user.profile,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "이메일과 비밀번호 필요" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "존재하지 않는 계정" });
+    }
+
+    // 🔥 지금은 평문 비교 (다음 단계에서 bcrypt)
+    if (user.password !== password) {
+      return res.status(401).json({ message: "비밀번호 불일치" });
+    }
+
+    // 🔐 JWT 발급
+    const token = jwt.sign(
+      {
+        id: user.id.toString(),
+        email: user.email,
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
+    );
+
+    return res.json({
+      token,
+      user: {
+        id: user.id.toString(),
+        email: user.email,
+        nickname: user.nickname,
+        profile: user.profile,
+      },
     });
   } catch (error) {
     console.error(error);
