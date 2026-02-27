@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import FormInput from "@/components/formInput/FormInput";
 import { loginSchema } from "@/schemas/auth";
+import { login } from "@/api/auth/route";
 
 export default function Login() {
   const router = useRouter();
@@ -24,14 +25,7 @@ export default function Login() {
     }
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(result.data),
-        }
-      );
+      const res = await login(result.data);
 
       if (!res.ok) {
         const data = await res.json();
@@ -127,7 +121,7 @@ export default function Login() {
         <div className="mt-6 text-center text-sm text-gray-400">
           계정이 없으신가요?{" "}
           <span
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/register")}
             className="text-primary cursor-pointer font-semibold hover:underline"
           >
             회원가입

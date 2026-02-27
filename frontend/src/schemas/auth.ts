@@ -17,6 +17,8 @@ export const registerSchema = z
       .trim()
       .min(1, "닉네임을 입력해주세요.")
       .max(20, "닉네임은 20자 이하로 입력해주세요."),
+
+    profile: z.string().min(1, "프로필을 선택해주세요."),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다.",
