@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Avatar from "@/components/common/Avatar";
 import { EMOJIS, COLORS } from "@/constant/settings";
 import FormInput from "@/components/formInput/FormInput";
+import { registerSchema, RegisterSchema } from "@/schemas/auth";
+
+type FormErrors = Partial<Record<keyof RegisterSchema, string>>;
 
 export default function Home() {
   const [nickname, setNickname] = useState("");
@@ -16,33 +19,29 @@ export default function Home() {
 
   const router = useRouter();
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const validate = () => {
-    const newErrors: { [key: string]: string } = {};
+    const result = registerSchema.safeParse({
+      email,
+      password,
+      confirmPassword,
+      nickname,
+    });
 
-    if (!email.trim()) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "올바른 이메일 형식이 아닙니다.";
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+
+      result.error.issues.forEach((err) => {
+        const fieldName = err.path[0] as keyof RegisterSchema;
+        fieldErrors[fieldName] = err.message;
+      });
+
+      setErrors(fieldErrors);
+      return false;
     }
 
-    if (!password) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (password.length < 6) {
-      newErrors.password = "비밀번호는 최소 6자 이상이어야 합니다.";
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
-    }
-
-    if (!nickname.trim()) {
-      newErrors.nickname = "닉네임을 입력해주세요.";
-    }
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleStart = () => {
@@ -193,7 +192,6 @@ export default function Home() {
 
         <button
           onClick={handleStart}
-          // disabled={Object.keys(errors).length > 0}
           className="bg-primary hover:bg-primary-dark w-full cursor-pointer rounded-xl px-4 py-3.5 text-lg font-bold text-white shadow-xl transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
         >
           시작하기
