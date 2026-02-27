@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
-import { loadChatData, saveChatData } from "./storage";
+import { loadChatData, saveChatData } from "./storage.js";
 
 let { rooms, messages } = loadChatData();
 

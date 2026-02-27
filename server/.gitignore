@@ -29,3 +29,4 @@ Thumbs.db
 
 server/data/
 data/
+/src/generated/prisma
