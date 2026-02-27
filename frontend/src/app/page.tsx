@@ -2,98 +2,55 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 import Avatar from "@/components/common/Avatar";
-
-const EMOJIS = [
-  "😀",
-  "😎",
-  "🥰",
-  "🤗",
-  "🤔",
-  "😴",
-  "🐶",
-  "🐱",
-  "🐭",
-  "🐹",
-  "🐰",
-  "🦊",
-  "🐻",
-  "🐼",
-  "🐨",
-  "🐯",
-  "🦁",
-  "🐮",
-  "🐷",
-  "🐸",
-  "🐵",
-  "🦄",
-  "🐔",
-  "🐧",
-  "🦆",
-  "🦉",
-  "🦇",
-  "🐺",
-  "🐗",
-  "🐴",
-];
-
-const COLORS = [
-  "#6366f1",
-  "#8b5cf6",
-  "#ec4899",
-  "#f43f5e",
-  "#ef4444",
-  "#f97316",
-  "#f59e0b",
-  "#eab308",
-  "#84cc16",
-  "#22c55e",
-  "#10b981",
-  "#14b8a6",
-  "#06b6d4",
-  "#0ea5e9",
-  "#3b82f6",
-  "#34147c",
-];
+import { EMOJIS, COLORS } from "@/constant/settings";
+import FormInput from "@/components/formInput/FormInput";
 
 export default function Home() {
-  const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedEmoji, setSelectedEmoji] = useState(EMOJIS[0]);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+
   const router = useRouter();
 
-  // 기존 유저 불러오기
-  useEffect(() => {
-    const savedUser = localStorage.getItem("chat-user");
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setName(user.name);
-      setSelectedEmoji(user.emoji || EMOJIS[0]);
-      setSelectedColor(user.backgroundColor || COLORS[0]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!email.trim()) {
+      newErrors.email = "이메일을 입력해주세요.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "올바른 이메일 형식이 아닙니다.";
     }
-  }, []);
+
+    if (!password) {
+      newErrors.password = "비밀번호를 입력해주세요.";
+    } else if (password.length < 6) {
+      newErrors.password = "비밀번호는 최소 6자 이상이어야 합니다.";
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+    }
+
+    if (!nickname.trim()) {
+      newErrors.nickname = "닉네임을 입력해주세요.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleStart = () => {
-    if (!name.trim()) return;
+    const isValid = validate();
+    if (!isValid) return;
 
-    const savedUser = localStorage.getItem("chat-user");
-    let userId = uuidv4();
-
-    if (savedUser) {
-      const existingUser = JSON.parse(savedUser);
-      userId = existingUser.id;
-    }
-
-    const user = {
-      id: userId,
-      name: name.trim(),
-      emoji: selectedEmoji,
-      backgroundColor: selectedColor,
-    };
-
-    localStorage.setItem("chat-user", JSON.stringify(user));
-    router.push("/chat");
+    console.log("검증 통과 ✅");
+    // 여기서 나중에 API 호출
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -140,17 +97,6 @@ export default function Home() {
         </div>
 
         <div className="mb-6 flex flex-col gap-2">
-          <label className="text-sm font-medium text-white/90">닉네임</label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="닉네임을 입력해주세요"
-            className="rounded-xl border border-white/20 bg-white/20 px-4 py-3 text-white placeholder-white/50 backdrop-blur-sm transition outline-none focus:border-white/40 focus:bg-white/30"
-          />
-        </div>
-
-        <div className="mb-6 flex flex-col gap-2">
           <label className="text-sm font-semibold text-gray-300">
             이모지 선택
           </label>
@@ -191,9 +137,63 @@ export default function Home() {
           </div>
         </div>
 
+        <div className="mb-6 flex flex-col gap-2">
+          <FormInput
+            label="닉네임"
+            name="nickname"
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="닉네임을 입력해주세요"
+            error={errors.nickname}
+            autoComplete="off"
+          />
+        </div>
+
+        <div className="mb-6 flex flex-col gap-2">
+          <FormInput
+            label="비밀번호"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="비밀번호를 입력해주세요"
+            error={errors.password}
+            autoComplete="new-password"
+          />
+        </div>
+
+        <div className="mb-6 flex flex-col gap-2">
+          <FormInput
+            label="비밀번호 확인"
+            name="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="비밀번호를 다시 입력해주세요"
+            error={errors.confirmPassword}
+          />
+        </div>
+
+        <div className="mb-6 flex flex-col gap-2">
+          <FormInput
+            label="이메일"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="이메일을 입력해주세요"
+            error={errors.email}
+          />
+        </div>
+
         <button
           onClick={handleStart}
-          disabled={!name.trim()}
+          // disabled={Object.keys(errors).length > 0}
           className="bg-primary hover:bg-primary-dark w-full cursor-pointer rounded-xl px-4 py-3.5 text-lg font-bold text-white shadow-xl transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
         >
           시작하기

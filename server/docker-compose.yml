@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: synchat
+    restart: always
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
