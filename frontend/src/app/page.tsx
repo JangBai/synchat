@@ -136,7 +136,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mb-6 flex flex-col gap-2">
+        <div className="mb-3 flex flex-col gap-2">
           <FormInput
             label="닉네임"
             name="nickname"
@@ -150,7 +150,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mb-6 flex flex-col gap-2">
+        <div className="mb-3 flex flex-col gap-2">
           <FormInput
             label="비밀번호"
             name="password"
@@ -164,7 +164,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mb-6 flex flex-col gap-2">
+        <div className="mb-3 flex flex-col gap-2">
           <FormInput
             label="비밀번호 확인"
             name="confirmPassword"
@@ -177,7 +177,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mb-6 flex flex-col gap-2">
+        <div className="mb-3 flex flex-col gap-2">
           <FormInput
             label="이메일"
             name="email"
